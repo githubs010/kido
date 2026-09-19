@@ -1,0 +1,23 @@
+MATH QUEST + GOOGLE SHEETS SETUP
+
+1. Create a new Google Sheet.
+2. Open Extensions -> Apps Script.
+3. Paste Code.gs into the Apps Script editor and save.
+4. Click Deploy -> New deployment.
+5. Select Web app.
+6. Execute as: Me.
+7. Who has access: Anyone.
+8. Deploy and copy the Web app URL ending in /exec.
+9. Open index.html and replace:
+   PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE
+   with your /exec URL.
+10. Open index.html in a browser.
+
+The sheet will automatically create a tab called GameData with:
+Timestamp, Player, Level, Question, Correct Answer, User Answer,
+Correct, Score Earned, Total Score, Streak, Hint Used
+
+Important:
+- Use the /exec URL, not the /dev URL.
+- Apps Script Web App permissions may require you to authorize the script.
+- The HTML uses POST requests to save each answered question.
