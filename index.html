@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Math Quest - Google Sheets</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:system-ui;background:linear-gradient(160deg,#eef2ff,#f8fafc);color:#172033}
+.app{max-width:520px;margin:auto;min-height:100vh;padding:14px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.logo{font-size:22px;font-weight:900}.badge{background:#fff;border-radius:20px;padding:8px 12px;font-weight:800;box-shadow:0 3px 12px #0001}
+.card{background:#fff;border-radius:24px;padding:18px;box-shadow:0 8px 28px #312e8115;margin-bottom:14px}
+input{width:100%;padding:13px;border:2px solid #e2e8f0;border-radius:14px;font-size:16px;margin:8px 0 12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{text-align:center;background:#f8fafc;border-radius:16px;padding:10px}.stat b{display:block;font-size:20px}.stat span{font-size:11px;color:#64748b}
+.progress{height:9px;background:#e5e7eb;border-radius:9px;overflow:hidden;margin:12px 0}.bar{height:100%;width:0;background:#4f46e5;transition:.25s}
+.question{text-align:center;font-size:34px;font-weight:900;padding:18px 5px 12px}
+.hint{text-align:center;color:#4f46e5;font-weight:700;min-height:28px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.answer{border:0;background:#eef2ff;border-radius:17px;padding:16px 8px;font-size:22px;font-weight:900;color:#312e81;box-shadow:0 3px 0 #c7d2fe}
+.answer:active{transform:translateY(2px);box-shadow:none}.correct{background:#dcfce7!important;color:#166534!important}.wrong{background:#fee2e2!important;color:#991b1b!important}
+.controls{display:flex;gap:8px;margin-top:12px}.btn{flex:1;border:0;border-radius:15px;padding:13px;font-weight:900;font-size:15px}.hintBtn{background:#fef3c7;color:#92400e}.nextBtn{background:#4f46e5;color:white}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:9px}.choice{border:2px solid #e2e8f0;background:#fff;border-radius:15px;padding:12px;font-weight:800}.choice.active{border-color:#4f46e5;background:#eef2ff;color:#312e81}
+.message{text-align:center;font-weight:900;min-height:24px;margin-top:9px}.status{text-align:center;font-size:12px;color:#64748b}
+
+.cloud-status{display:inline-flex;align-items:center;gap:7px;margin:8px 0;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:700;background:#fff3cd;color:#7a5b00}
+.cloud-status.connected{background:#d1fae5;color:#065f46}
+.cloud-status.error{background:#fee2e2;color:#991b1b}
+.cloud-dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+
+.answer-instruction{
+  display:block;
+  width:min(92%, 300px);
+  margin:14px auto 12px;
+  padding:11px 18px;
+  border:0;
+  border-radius:14px;
+  background:#2f66d0;
+  color:#fff;
+  font-size:17px;
+  font-weight:800;
+  line-height:1.2;
+  text-align:center;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(0,0,0,.12);
+}
+.answer-instruction:active{
+  transform:scale(.97);
+}
+#choices{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  width:100%;
+}
+#choices button{
+  min-height:72px;
+  width:100%;
+  padding:14px 10px;
+  border-radius:18px;
+  font-size:28px;
+  font-weight:800;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+@media(max-width:480px){
+  #choices{gap:10px}
+  #choices button{min-height:68px;font-size:25px}
+}
+</style>
+</head>
+<body>
+<div id="cloudStatus" class="cloud-status"><span class="cloud-dot"></span><span id="cloudStatusText">Connecting to cloud...</span></div>
+<div class="app">
+<div class="header"><div class="logo">🧠 Math Quest</div><div class="badge">🏆 <span id="best">0</span></div></div>
+
+<div class="card">
+<label><b>Player name</b></label>
+<input id="player" placeholder="Enter your name" maxlength="40">
+<div class="stats">
+<div class="stat"><b id="score">0</b><span>SCORE</span></div>
+<div class="stat"><b id="streak">0</b><span>STREAK 🔥</span></div>
+<div class="stat"><b id="left">10000</b><span>LEFT</span></div>
+</div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="question" id="question"></div>
+<div class="hint" id="hint">💡 Tap an answer</div>
+<div class="answers" id="answers"></div>
+<div class="controls">
+<button class="btn hintBtn" onclick="giveHint()">💡 Hint</button>
+<button class="btn nextBtn" onclick="nextQuestion()">▶ Next</button>
+</div>
+<div class="message" id="message"></div>
+<div class="status" id="status">Cloud saving: not connected</div>
+</div>
+
+<div class="card"><b>Difficulty</b><div class="menu" style="margin-top:10px">
+<button class="choice active" onclick="setLevel('easy',this)">😊 Easy</button>
+<button class="choice" onclick="setLevel('medium',this)">🙂 Medium</button>
+<button class="choice" onclick="setLevel('hard',this)">🔥 Hard</button>
+<button class="choice" onclick="setLevel('mixed',this)">🎯 Mixed</button>
+</div></div>
+</div>
+
+<script>
+// PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT /exec URL HERE:
+const API_URL = "https://script.google.com/macros/s/AKfycbycUtGH48YReraqfcPdhrCa8tKHVs4EQzoblBlvFFXtgBhWKqHBw8bCWI5FdHg-mPssiA/exec";
+
+const TOTAL=10000;
+let level="easy",qCount=0,score=0,streak=0,best=Number(localStorage.getItem("mathBest")||0);
+let current=null,hinted=false,answered=false;
+document.getElementById("best").textContent=best;
+
+
+async function testCloudConnection() {
+  const el = document.getElementById("cloudStatus");
+  const text = document.getElementById("cloudStatusText");
+  try {
+    const response = await saveToCloud(payload);
+    const data = await response.json();
+    if (data && data.ok) {
+      el.className = "cloud-status connected";
+      text.textContent = "Cloud saving: Connected";
+      return true;
+    }
+    throw new Error("API did not return ok");
+  } catch (err) {
+    el.className = "cloud-status error";
+    text.textContent = "Cloud saving: Not connected";
+    console.error("Cloud connection error:", err);
+    return false;
+  }
+}
+
+async function saveToCloud(payload) {
+  try {
+    const response = await saveToCloud(payload);
+    const data = await response.json();
+    if (data && data.ok) {
+      const el = document.getElementById("cloudStatus");
+      const text = document.getElementById("cloudStatusText");
+      el.className = "cloud-status connected";
+      text.textContent = "Cloud saving: Connected";
+      return true;
+    }
+    throw new Error((data && data.error) || "Save failed");
+  } catch (err) {
+    console.error("Cloud save error:", err);
+    const el = document.getElementById("cloudStatus");
+    const text = document.getElementById("cloudStatusText");
+    el.className = "cloud-status error";
+    text.textContent = "Cloud saving: Save failed";
+    return false;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", testCloudConnection);
+
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function makeQuestion(){
+ let L=level,op,a,b,ans;
+ if(L==="mixed")L=["easy","medium","hard"][rand(0,2)];
+ if(L==="easy"){op=["+","-"][rand(0,1)];a=rand(1,30);b=rand(1,30);if(op==="-"&&b>a)[a,b]=[b,a]}
+ else if(L==="medium"){op=["+","-","×","÷"][rand(0,3)];
+   if(op==="×"){a=rand(2,15);b=rand(2,12)} else if(op==="÷"){b=rand(2,12);ans=rand(2,20);a=b*ans}
+   else{a=rand(10,100);b=rand(10,100);if(op==="-"&&b>a)[a,b]=[b,a]}}
+ else{op=["+","-","×","÷"][rand(0,3)];
+   if(op==="×"){a=rand(10,50);b=rand(5,25)} else if(op==="÷"){b=rand(3,25);ans=rand(5,50);a=b*ans}
+   else{a=rand(50,999);b=rand(20,999);if(op==="-"&&b>a)[a,b]=[b,a]}}
+ if(ans===undefined)ans=op==="+"?a+b:op==="-"?a-b:a*b;
+ let opts=new Set([ans]);while(opts.size<4){let d=rand(1,Math.max(3,Math.ceil(Math.abs(ans)*.25)+3)),x=ans+(Math.random()<.5?-d:d);if(x>=0)opts.add(x)}
+ return {a,b,op,ans,opts:[...opts].sort(()=>Math.random()-.5)}
+}
+function render(){
+ current=makeQuestion();hinted=false;answered=false;
+ question.textContent=`${current.a} ${current.op} ${current.b} = ?`;
+ hint.textContent="💡 Tap an answer";message.textContent="";
+ answers.innerHTML="";
+ current.opts.forEach(x=>{let b=document.createElement("button");b.className="answer";b.textContent=x;b.onclick=()=>check(x,b);answers.appendChild(b)});
+ update();
+}
+function check(x,btn){
+ if(answered)return;answered=true;
+ const correct=x===current.ans;const earned=correct?(hinted?5:10):0;
+ if(correct){score+=earned;streak++;btn.classList.add("correct");message.textContent=streak>=3?"🔥 Great streak!":"✅ Correct!"}
+ else{streak=0;btn.classList.add("wrong");message.textContent=`❌ Answer: ${current.ans}`;document.querySelectorAll(".answer").forEach(b=>{if(Number(b.textContent)===current.ans)b.classList.add("correct")})}
+ qCount=Math.min(TOTAL,qCount+1);
+ if(score>best){best=score;localStorage.setItem("mathBest",best);document.getElementById("best").textContent=best}
+ saveResult({correct,userAnswer:x,scoreEarned:earned});
+ update();
+}
+function saveResult(r){
+ if(!API_URL||API_URL.includes("PASTE_")){status.textContent="Cloud saving: add Apps Script URL";return}
+ status.textContent="☁ Saving...";
+ const payload={player:document.getElementById("player").value.trim()||"Guest",level,question:`${current.a} ${current.op} ${current.b}`,correctAnswer:current.ans,userAnswer:r.userAnswer,correct:r.correct,scoreEarned:r.scoreEarned,totalScore:score,streak,hintUsed:hinted};
+ saveToCloud(payload)
+ .then(()=>status.textContent="☁ Saved to Google Sheet")
+ .catch(()=>status.textContent="⚠ Save failed");
+}
+function giveHint(){
+ if(answered)return;hinted=true;
+ hint.textContent=current.op==="+"?`💡 Add ${current.a} and ${current.b}.`:current.op==="-"?`💡 Take ${current.b} away from ${current.a}.`:current.op==="×"?`💡 Think of ${current.a} groups of ${current.b}.`:`💡 How many groups of ${current.b} make ${current.a}?`;
+}
+function nextQuestion(){render()}
+function setLevel(l,el){level=l;document.querySelectorAll(".choice").forEach(x=>x.classList.remove("active"));el.classList.add("active");render()}
+function update(){scoreEl.textContent=score;streakEl.textContent=streak;left.textContent=TOTAL-qCount;bar.style.width=(qCount/TOTAL*100)+"%"}
+const scoreEl=document.getElementById("score"),streakEl=document.getElementById("streak");
+render();
+</script>
+</body>
+</html>
