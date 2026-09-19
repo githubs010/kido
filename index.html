@@ -70,7 +70,7 @@ input{width:100%;padding:13px;border:2px solid #e2e8f0;border-radius:14px;font-s
 </style>
 </head>
 <body>
-<div id="cloudStatus" class="cloud-status"><span class="cloud-dot"></span><span id="cloudStatusText">Connecting to cloud...</span></div>
+<div id="cloudStatus" class="cloud-status"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud saving: Ready</span></div>
 <div class="app">
 <div class="header"><div class="logo">🧠 Math Quest</div><div class="badge">🏆 <span id="best">0</span></div></div>
 
@@ -91,7 +91,7 @@ input{width:100%;padding:13px;border:2px solid #e2e8f0;border-radius:14px;font-s
 <button class="btn nextBtn" onclick="nextQuestion()">▶ Next</button>
 </div>
 <div class="message" id="message"></div>
-<div class="status" id="status">Cloud saving: not connected</div>
+<div class="status" id="status">Cloud saving: ready</div>
 </div>
 
 <div class="card"><b>Difficulty</b><div class="menu" style="margin-top:10px">
@@ -112,49 +112,29 @@ let current=null,hinted=false,answered=false;
 document.getElementById("best").textContent=best;
 
 
-async function testCloudConnection() {
-  const el = document.getElementById("cloudStatus");
-  const text = document.getElementById("cloudStatusText");
-  try {
-    const response = await saveToCloud(payload);
-    const data = await response.json();
-    if (data && data.ok) {
-      el.className = "cloud-status connected";
-      text.textContent = "Cloud saving: Connected";
-      return true;
-    }
-    throw new Error("API did not return ok");
-  } catch (err) {
-    el.className = "cloud-status error";
-    text.textContent = "Cloud saving: Not connected";
-    console.error("Cloud connection error:", err);
-    return false;
-  }
+function setCloudStatus(text, cls){
+  const el=document.getElementById("cloudStatus");
+  const t=document.getElementById("cloudStatusText");
+  if(el) el.className="cloud-status "+(cls||"");
+  if(t) t.textContent=text;
 }
 
-async function saveToCloud(payload) {
-  try {
-    const response = await saveToCloud(payload);
-    const data = await response.json();
-    if (data && data.ok) {
-      const el = document.getElementById("cloudStatus");
-      const text = document.getElementById("cloudStatusText");
-      el.className = "cloud-status connected";
-      text.textContent = "Cloud saving: Connected";
-      return true;
-    }
-    throw new Error((data && data.error) || "Save failed");
-  } catch (err) {
-    console.error("Cloud save error:", err);
-    const el = document.getElementById("cloudStatus");
-    const text = document.getElementById("cloudStatusText");
-    el.className = "cloud-status error";
-    text.textContent = "Cloud saving: Save failed";
-    return false;
-  }
+async function saveToCloud(payload){
+  if(!API_URL || API_URL.includes("PASTE_")) throw new Error("Apps Script URL missing");
+  // text/plain avoids a CORS preflight. Google Apps Script receives the JSON body in e.postData.contents.
+  await fetch(API_URL,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(payload),
+    keepalive:true
+  });
+  // no-cors intentionally returns an opaque response, so we cannot read JSON from Google.
+  setCloudStatus("Cloud saving: Active","connected");
+  return true;
 }
 
-document.addEventListener("DOMContentLoaded", testCloudConnection);
+setCloudStatus("Cloud saving: Ready","connected");
 
 function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function makeQuestion(){
@@ -195,7 +175,7 @@ function saveResult(r){
  const payload={player:document.getElementById("player").value.trim()||"Guest",level,question:`${current.a} ${current.op} ${current.b}`,correctAnswer:current.ans,userAnswer:r.userAnswer,correct:r.correct,scoreEarned:r.scoreEarned,totalScore:score,streak,hintUsed:hinted};
  saveToCloud(payload)
  .then(()=>status.textContent="☁ Saved to Google Sheet")
- .catch(()=>status.textContent="⚠ Save failed");
+ .catch(()=>{status.textContent="⚠ Save failed";setCloudStatus("Cloud saving: Error","error")});
 }
 function giveHint(){
  if(answered)return;hinted=true;
