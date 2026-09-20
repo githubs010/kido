@@ -3,188 +3,889 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Math Quest - Google Sheets</title>
+<title>Math Quest - 3rd Grade</title>
 <style>
+/* Base Styles */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:system-ui;background:linear-gradient(160deg,#eef2ff,#f8fafc);color:#172033}
-.app{max-width:520px;margin:auto;min-height:100vh;padding:14px}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.logo{font-size:22px;font-weight:900}.badge{background:#fff;border-radius:20px;padding:8px 12px;font-weight:800;box-shadow:0 3px 12px #0001}
-.card{background:#fff;border-radius:24px;padding:18px;box-shadow:0 8px 28px #312e8115;margin-bottom:14px}
-input{width:100%;padding:13px;border:2px solid #e2e8f0;border-radius:14px;font-size:16px;margin:8px 0 12px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{text-align:center;background:#f8fafc;border-radius:16px;padding:10px}.stat b{display:block;font-size:20px}.stat span{font-size:11px;color:#64748b}
-.progress{height:9px;background:#e5e7eb;border-radius:9px;overflow:hidden;margin:12px 0}.bar{height:100%;width:0;background:#4f46e5;transition:.25s}
-.question{text-align:center;font-size:34px;font-weight:900;padding:18px 5px 12px}
-.hint{text-align:center;color:#4f46e5;font-weight:700;min-height:28px}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.answer{border:0;background:#eef2ff;border-radius:17px;padding:16px 8px;font-size:22px;font-weight:900;color:#312e81;box-shadow:0 3px 0 #c7d2fe}
-.answer:active{transform:translateY(2px);box-shadow:none}.correct{background:#dcfce7!important;color:#166534!important}.wrong{background:#fee2e2!important;color:#991b1b!important}
-.controls{display:flex;gap:8px;margin-top:12px}.btn{flex:1;border:0;border-radius:15px;padding:13px;font-weight:900;font-size:15px}.hintBtn{background:#fef3c7;color:#92400e}.nextBtn{background:#4f46e5;color:white}
-.menu{display:grid;grid-template-columns:1fr 1fr;gap:9px}.choice{border:2px solid #e2e8f0;background:#fff;border-radius:15px;padding:12px;font-weight:800}.choice.active{border-color:#4f46e5;background:#eef2ff;color:#312e81}
-.message{text-align:center;font-weight:900;min-height:24px;margin-top:9px}.status{text-align:center;font-size:12px;color:#64748b}
+body{margin:0;font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:linear-gradient(160deg,#c7d2fe,#f8fafc);color:#1e293b}
+.app{max-width:540px;margin:auto;min-height:100vh;padding:16px}
 
-.cloud-status{display:inline-flex;align-items:center;gap:7px;margin:8px 0;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:700;background:#fff3cd;color:#7a5b00}
+/* Header & Cards */
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.logo{font-size:26px;font-weight:900; color:#312e81; text-shadow: 1px 1px 2px #fff;}
+.badge{background:#fff;border-radius:20px;padding:8px 16px;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,0.08); font-size:18px; color:#b45309}
+.card{background:#fff;border-radius:28px;padding:24px;box-shadow:0 10px 35px rgba(49, 46, 129, 0.1);margin-bottom:16px; border: 3px solid #ffffff;}
+
+/* Inputs & Stats */
+label {font-weight:800; color:#475569; font-size: 15px;}
+input{width:100%;padding:14px;border:3px solid #e2e8f0;border-radius:16px;font-size:18px;margin:8px 0 16px; font-weight:700; color:#333; outline:none; transition:0.3s;}
+input:focus {border-color: #6366f1; background:#e0e7ff;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{text-align:center;background:#f1f5f9;border-radius:18px;padding:12px; border: 2px solid #e2e8f0;}
+.stat b{display:block;font-size:24px; color:#1e293b}
+.stat span{font-size:12px;color:#64748b; font-weight:800; letter-spacing: 0.5px;}
+
+/* Progress & Question Area */
+.progress{height:12px;background:#e2e8f0;border-radius:12px;overflow:hidden;margin:16px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);}
+.bar{height:100%;width:0;background:linear-gradient(90deg, #4f46e5, #818cf8);transition:.4s ease-out; border-radius:12px;}
+.question{text-align:center;font-size:46px;font-weight:900;padding:20px 5px 12px; color:#1e293b; letter-spacing: 2px;}
+.hint{text-align:center;color:#4f46e5;font-weight:800;min-height:28px; font-size:16px;}
+
+/* Answer Buttons */
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.answer{border:0;background:#e0e7ff;border-radius:20px;padding:20px 10px;font-size:28px;font-weight:900;color:#3730a3;box-shadow:0 6px 0 #a5b4fc; transition:0.1s; cursor:pointer;}
+.answer:active{transform:translateY(6px);box-shadow:0 0px 0 #a5b4fc}
+.correct{background:#bbf7d0!important;color:#166534!important; box-shadow:0 6px 0 #4ade80!important;}
+.wrong{background:#fecaca!important;color:#991b1b!important; box-shadow:0 6px 0 #f87171!important;}
+
+/* Controls */
+.controls{display:flex;gap:10px;margin-top:20px}
+.btn{flex:1;border:0;border-radius:18px;padding:16px;font-weight:900;font-size:18px; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,0.1); transition:0.1s;}
+.btn:active{transform:translateY(4px);box-shadow:none;}
+.hintBtn{background:#fde68a;color:#92400e; border:2px solid #fcd34d;}
+.nextBtn{background:#4f46e5;color:white;}
+
+/* Difficulty Menu */
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.choice{border:3px solid #e2e8f0;background:#fff;border-radius:16px;padding:14px;font-weight:900; font-size:16px; color:#64748b; cursor:pointer; transition:0.2s;}
+.choice.active{border-color:#4f46e5;background:#e0e7ff;color:#3730a3;}
+.message{text-align:center;font-weight:900;font-size:20px;min-height:30px;margin-top:16px; border-radius: 12px; padding: 4px;}
+
+/* Status Tag */
+.cloud-status{display:inline-flex;align-items:center;gap:8px;margin:10px 0;padding:8px 16px;border-radius:999px;font-size:14px;font-weight:800;background:#fff3cd;color:#7a5b00; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
 .cloud-status.connected{background:#d1fae5;color:#065f46}
 .cloud-status.error{background:#fee2e2;color:#991b1b}
-.cloud-dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+.cloud-dot{width:10px;height:10px;border-radius:50%;background:currentColor}
 
-.answer-instruction{
-  display:block;
-  width:min(92%, 300px);
-  margin:14px auto 12px;
-  padding:11px 18px;
-  border:0;
-  border-radius:14px;
-  background:#2f66d0;
-  color:#fff;
-  font-size:17px;
-  font-weight:800;
-  line-height:1.2;
-  text-align:center;
-  cursor:pointer;
-  box-shadow:0 4px 10px rgba(0,0,0,.12);
+/* =========================================
+   NOTEBOOK EXPLANATION STYLES (NEW) 
+   ========================================= */
+.explanation-box {
+    display: none;
+    margin-top: 24px;
+    background-color: #fffaf0;
+    background-image: 
+        linear-gradient(#cbd5e1 1px, transparent 1px),
+        linear-gradient(90deg, #fca5a5 2px, transparent 2px);
+    background-size: 100% 2em, 100% 100%;
+    background-position: 0 0, 2em 0;
+    padding: 1.5em 1em 1.5em 3.5em;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; /* Kid friendly font */
+    border: 1px solid #e2e8f0;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.answer-instruction:active{
-  transform:scale(.97);
+
+@keyframes popIn {
+    0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
 }
-#choices{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-  width:100%;
+
+.notebook-title {
+    font-size: 24px;
+    color: #1e3a8a;
+    text-transform: uppercase;
+    font-weight: 900;
+    margin: 0 0 15px 0;
+    text-align: center;
+    letter-spacing: 2px;
+    text-decoration: underline;
 }
-#choices button{
-  min-height:72px;
-  width:100%;
-  padding:14px 10px;
-  border-radius:18px;
-  font-size:28px;
-  font-weight:800;
-  cursor:pointer;
-  touch-action:manipulation;
+
+.step-row {
+    font-size: 18px;
+    color: #334155;
+    line-height: 2em;
+    margin-bottom: 8px;
+    font-weight: bold;
 }
-@media(max-width:480px){
-  #choices{gap:10px}
-  #choices button{min-height:68px;font-size:25px}
+.step-row span.red { color: #dc2626; }
+.step-row span.blue { color: #2563eb; }
+.step-row span.green { color: #16a34a; }
+
+.math-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 32px;
+    font-weight: bold;
+    width: fit-content;
+    margin: 0 auto 20px auto;
+    line-height: 1.2;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
 }
+.math-stack .bottom-number {
+    border-bottom: 3px solid #1e293b;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Long Division visual */
+.long-division-stack{width:100%;margin:10px auto 18px!important}
+.long-division-visual{display:inline-block;font-family:'Courier New',monospace;font-weight:900;font-size:32px;text-align:left}
+.ld-quotient{text-align:right;padding-right:8px;margin-bottom:2px}
+.ld-body{display:flex;align-items:flex-start}
+.ld-divisor{padding:3px 10px 0 0}
+.ld-dividend{border-left:3px solid #1e293b;border-top:3px solid #1e293b;padding:3px 8px 0 10px;min-width:90px}
+.ld-working{background:#fff;padding:12px;border-radius:14px;border:2px dashed #cbd5e1;margin:10px 0}
+.ld-line{font-size:18px;line-height:1.7;margin:3px 0}
+.ld-label{display:inline-block;min-width:175px}
+.ld-notebook{margin:14px auto;padding:14px;background:#fffdf5;border-radius:12px;border:1px solid #e2e8f0;font-family:'Courier New',monospace;font-weight:900;font-size:24px;max-width:260px}
+.ld-mini{text-align:right}
+.ld-mini .q{display:block;margin-right:10px}
+.ld-mini .d{display:inline-block;padding-right:8px}
+.ld-mini .br{display:inline-block;border-left:3px solid #1e293b;border-top:3px solid #1e293b;padding:2px 8px}
+.ld-written{margin-top:12px;text-align:right;padding-right:25px;line-height:1.25}
+.ld-written .line{letter-spacing:1px}
+
+
+/* Separate remainder badge: keeps Remainder away from the quotient */
+.ld-quotient{
+    position:relative;
+    min-height:42px;
+    padding-right:0;
+    text-align:right;
+    line-height:1;
+}
+.ld-main-quotient{
+    display:inline-block;
+    margin-right:42px;
+}
+.ld-remainder-badge{
+    position:absolute;
+    right:0;
+    top:-4px;
+    font-size:16px;
+    line-height:1;
+    font-weight:900;
+    background:#fff7ed;
+    border:2px solid #fb923c;
+    border-radius:8px;
+    padding:4px 6px;
+    color:#9a3412;
+    transform:translateY(-2px);
+}
+
+
+.ld-mini .q{
+    position:relative;
+    min-height:30px;
+    display:block;
+    text-align:right;
+}
+.ld-mini .mini-q{
+    display:inline-block;
+    margin-right:30px;
+}
+.ld-mini .mini-r{
+    position:absolute;
+    right:0;
+    top:-3px;
+    font-size:14px;
+    background:#fff7ed;
+    border:1px solid #fb923c;
+    border-radius:5px;
+    padding:2px 4px;
+    color:#9a3412;
+}
+
+
+/* Universal Long Division Notation */
+.long-division-stack{width:100%;margin:10px auto 18px!important}
+.long-division-visual{display:inline-block;font-family:'Courier New',monospace;font-weight:900;font-size:32px;text-align:left}
+.ld-quotient{position:relative;min-height:42px;text-align:right;line-height:1;padding-right:0}
+.ld-main-quotient{display:inline-block;margin-right:44px}
+.ld-remainder-badge{
+    position:absolute;right:0;top:-5px;
+    font-size:15px;line-height:1;font-weight:900;
+    background:#fff7ed;border:2px solid #fb923c;border-radius:7px;
+    padding:4px 6px;color:#9a3412;
+}
+.ld-body{display:flex;align-items:flex-start}
+.ld-divisor{padding:3px 10px 0 0}
+.ld-dividend{
+    border-left:3px solid #1e293b;border-top:3px solid #1e293b;
+    padding:3px 8px 0 10px;min-width:90px;
+}
+.ld-algorithm-work{
+    background:#fffdf5;border:1px solid #e2e8f0;border-radius:12px;
+    padding:10px;margin:10px 0;
+}
+.ld-algo-cycle{padding:7px 0;border-bottom:1px dashed #cbd5e1}
+.ld-algo-cycle:last-child{border-bottom:0}
+.ld-algo-step{font-size:17px;line-height:1.65;display:flex;gap:6px}
+.ld-label{display:inline-block;min-width:125px}
+.traditional-division{
+    margin:14px auto;padding:14px 18px;background:#fffdf5;
+    border-radius:12px;border:1px solid #e2e8f0;
+    font-family:'Courier New',monospace;font-weight:900;font-size:23px;
+    max-width:270px;
+}
+.traditional-quotient{
+    text-align:right;min-height:30px;position:relative;
+    padding-right:40px;
+}
+.traditional-r{
+    position:absolute;right:0;top:-3px;
+    font-size:14px;color:#9a3412;background:#fff7ed;
+    border:1px solid #fb923c;border-radius:5px;padding:2px 4px;
+}
+.traditional-problem{display:flex;align-items:flex-start}
+.traditional-divisor{padding-right:8px}
+.traditional-bracket{
+    border-left:3px solid #1e293b;border-top:3px solid #1e293b;
+    padding:2px 8px;min-width:100px;
+}
+.traditional-working{text-align:right;padding-right:25px;line-height:1.25}
+.traditional-row{min-height:29px}
+.traditional-line{letter-spacing:0;font-size:18px}
+.final-remainder{padding-top:2px}
+
+
+/* Precise traditional long-division column alignment */
+.traditional-working{
+    text-align:left;
+    padding-left:38px;
+    line-height:1.2;
+    font-family:'Courier New',monospace;
+    white-space:pre;
+}
+.traditional-row.mono,
+.traditional-line.mono{
+    white-space:pre;
+    text-align:left;
+    min-height:28px;
+    font-family:'Courier New',monospace;
+}
+.traditional-line.mono{
+    font-size:18px;
+    min-height:22px;
+}
+.traditional-row.final-remainder{
+    text-align:left;
+    padding-top:0;
+}
+
+
+/* Compact, correctly aligned traditional long division */
+.traditional-working{
+    width:fit-content;
+    min-width:150px;
+    margin:8px auto 0;
+    text-align:left;
+    line-height:1.15;
+    font-family:'Courier New',monospace;
+    font-size:24px;
+    font-weight:900;
+    white-space:pre;
+}
+.traditional-row.mono,
+.traditional-line.mono{
+    white-space:pre;
+    text-align:left;
+    min-height:30px;
+    line-height:1.15;
+    font-family:'Courier New',monospace;
+}
+.traditional-line.mono{
+    font-size:21px;
+    min-height:22px;
+}
+.traditional-row.final-remainder{
+    padding-top:0;
+}
+
+
+/* Final long-division alignment: one compact right edge */
+.traditional-working{
+    width:170px;
+    margin:8px auto 0;
+    padding:0;
+    text-align:right;
+    font-family:'Courier New',monospace;
+    font-size:24px;
+    font-weight:900;
+    line-height:1.05;
+}
+.traditional-row.mono{
+    width:100%;
+    min-height:30px;
+    text-align:right;
+    white-space:nowrap;
+}
+.traditional-row.subtract-row{
+    padding-right:4px;
+}
+.traditional-row.working-number{
+    padding-right:4px;
+}
+.traditional-line.mono{
+    width:100%;
+    min-height:18px;
+    text-align:right;
+    white-space:nowrap;
+    font-size:20px;
+    letter-spacing:-1px;
+    overflow:hidden;
+}
+.traditional-row.final-remainder{
+    padding-right:4px;
+    min-height:30px;
+}
+
+
+/* =========================================================
+   Traditional Long Division — clean classroom notation
+   ========================================================= */
+.traditional-division-card{
+    width:100%;
+    max-width:340px;
+    margin:8px auto 0;
+    padding:10px 12px 14px;
+    box-sizing:border-box;
+    background:#fffdf7;
+    border-radius:12px;
+    font-family:'Courier New',monospace;
+    color:#0f2747;
+}
+
+.ld-top{
+    width:100%;
+    height:42px;
+    position:relative;
+}
+
+.ld-quotient-new{
+    position:absolute;
+    right:46px;
+    top:0;
+    font-size:28px;
+    font-weight:900;
+    line-height:1;
+}
+
+.ld-r-new{
+    position:absolute;
+    left:calc(100% + 10px);
+    top:-5px;
+    white-space:nowrap;
+    font-family:Arial,sans-serif;
+    font-size:13px;
+    font-weight:800;
+    color:#c2410c;
+    background:#fff7ed;
+    border:1.5px solid #fb923c;
+    border-radius:6px;
+    padding:3px 5px;
+}
+
+.ld-problem-new{
+    display:flex;
+    align-items:flex-start;
+    width:max-content;
+    margin-left:auto;
+    margin-right:28px;
+    font-size:25px;
+    font-weight:900;
+    line-height:1;
+}
+
+.ld-divisor-new{
+    padding-right:8px;
+    padding-top:6px;
+}
+
+.ld-bracket-new{
+    display:inline-block;
+    min-width:3ch;
+    padding:4px 8px 6px 10px;
+    border-left:3px solid #0f172a;
+    border-top:3px solid #0f172a;
+}
+
+.ld-working-new{
+    width:calc(3ch + 18px);
+    margin-left:auto;
+    margin-right:28px;
+    margin-top:2px;
+    font-size:24px;
+    font-weight:900;
+    line-height:1.08;
+}
+
+.ld-work-row{
+    width:100%;
+    min-height:31px;
+    box-sizing:border-box;
+    text-align:right;
+    white-space:nowrap;
+}
+
+.ld-work-row span{
+    display:inline-block;
+    min-width:0;
+}
+
+.ld-work-line{
+    height:2px;
+    background:#334155;
+    margin-top:1px;
+    margin-bottom:3px;
+    margin-left:auto;
+}
+
+@media (max-width:420px){
+    .traditional-division-card{
+        max-width:320px;
+        padding-left:8px;
+        padding-right:8px;
+    }
+    .ld-problem-new{
+        margin-right:18px;
+    }
+    .ld-working-new{
+        margin-right:18px;
+        font-size:22px;
+    }
+    .ld-quotient-new{
+        right:36px;
+    }
+}
+
 </style>
+<!-- Add a friendly Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="cloudStatus" class="cloud-status"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud saving: Ready</span></div>
 <div class="app">
-<div class="header"><div class="logo">🧠 Math Quest</div><div class="badge">🏆 <span id="best">0</span></div></div>
+    <div class="header">
+        <div class="logo">🧠 Math Quest</div>
+        <div class="badge">🏆 <span id="best">0</span></div>
+    </div>
 
-<div class="card">
-<label><b>Player name</b></label>
-<input id="player" placeholder="Enter your name" maxlength="40">
-<div class="stats">
-<div class="stat"><b id="score">0</b><span>SCORE</span></div>
-<div class="stat"><b id="streak">0</b><span>STREAK 🔥</span></div>
-<div class="stat"><b id="left">10000</b><span>LEFT</span></div>
-</div>
-<div class="progress"><div class="bar" id="bar"></div></div>
-<div class="question" id="question"></div>
-<div class="hint" id="hint">💡 Tap an answer</div>
-<div class="answers" id="answers"></div>
-<div class="controls">
-<button class="btn hintBtn" onclick="giveHint()">💡 Hint</button>
-<button class="btn nextBtn" onclick="nextQuestion()">▶ Next</button>
-</div>
-<div class="message" id="message"></div>
-<div class="status" id="status">Cloud saving: ready</div>
-</div>
+    <div class="card">
+        <label><b>Student Name</b></label>
+        <input id="player" placeholder="Enter your name" maxlength="40">
+        
+        <div class="stats">
+            <div class="stat"><b id="score">0</b><span>SCORE</span></div>
+            <div class="stat"><b id="streak">0</b><span>STREAK 🔥</span></div>
+            <div class="stat"><b id="left">10000</b><span>LEFT</span></div>
+        </div>
+        
+        <div class="progress"><div class="bar" id="bar"></div></div>
+        
+        <div class="question" id="question"></div>
+        <div class="hint" id="hint">💡 Tap an answer</div>
+        
+        <div class="answers" id="answers"></div>
+        
+        <!-- NEW EXPLANTION BOX -->
+        <div id="explanation" class="explanation-box"></div>
 
-<div class="card"><b>Difficulty</b><div class="menu" style="margin-top:10px">
-<button class="choice active" onclick="setLevel('easy',this)">😊 Easy</button>
-<button class="choice" onclick="setLevel('medium',this)">🙂 Medium</button>
-<button class="choice" onclick="setLevel('hard',this)">🔥 Hard</button>
-<button class="choice" onclick="setLevel('mixed',this)">🎯 Mixed</button>
-</div></div>
+        <div class="controls">
+            <button class="btn hintBtn" onclick="giveHint()">💡 Hint</button>
+            <button class="btn nextBtn" onclick="nextQuestion()">▶ Next</button>
+        </div>
+        
+        <div class="message" id="message"></div>
+    </div>
+
+    <div class="card">
+        <label><b>Difficulty Level</b></label>
+        <div class="menu" style="margin-top:12px">
+            <button class="choice active" onclick="setLevel('easy',this)">😊 Easy</button>
+            <button class="choice" onclick="setLevel('medium',this)">🙂 Medium</button>
+            <button class="choice" onclick="setLevel('hard',this)">🔥 Hard</button>
+            <button class="choice" onclick="setLevel('mixed',this)">🎯 Mixed</button>
+        </div>
+    </div>
 </div>
 
 <script>
-// PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT /exec URL HERE:
 const API_URL = "https://script.google.com/macros/s/AKfycbycUtGH48YReraqfcPdhrCa8tKHVs4EQzoblBlvFFXtgBhWKqHBw8bCWI5FdHg-mPssiA/exec";
 
-const TOTAL=10000;
-let level="easy",qCount=0,score=0,streak=0,best=Number(localStorage.getItem("mathBest")||0);
-let current=null,hinted=false,answered=false;
-document.getElementById("best").textContent=best;
+const TOTAL = 10000;
+let level = "easy", qCount = 0, score = 0, streak = 0, best = Number(localStorage.getItem("mathBest")||0);
+let current = null, hinted = false, answered = false;
+document.getElementById("best").textContent = best;
 
+const questionEl = document.getElementById("question");
+const hintEl = document.getElementById("hint");
+const messageEl = document.getElementById("message");
+const answersEl = document.getElementById("answers");
+const explanationEl = document.getElementById("explanation");
+const scoreEl = document.getElementById("score");
+const streakEl = document.getElementById("streak");
+const leftEl = document.getElementById("left");
+const barEl = document.getElementById("bar");
+const statusEl = document.getElementById("cloudStatusText");
 
 function setCloudStatus(text, cls){
-  const el=document.getElementById("cloudStatus");
-  const t=document.getElementById("cloudStatusText");
-  if(el) el.className="cloud-status "+(cls||"");
-  if(t) t.textContent=text;
+    const el = document.getElementById("cloudStatus");
+    if(el) el.className = "cloud-status " + (cls || "");
+    if(statusEl) statusEl.textContent = text;
 }
 
 async function saveToCloud(payload){
-  if(!API_URL || API_URL.includes("PASTE_")) throw new Error("Apps Script URL missing");
-  // text/plain avoids a CORS preflight. Google Apps Script receives the JSON body in e.postData.contents.
-  await fetch(API_URL,{
-    method:"POST",
-    mode:"no-cors",
-    headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify(payload),
-    keepalive:true
-  });
-  // no-cors intentionally returns an opaque response, so we cannot read JSON from Google.
-  setCloudStatus("Cloud saving: Active","connected");
-  return true;
+    if(!API_URL || API_URL.includes("PASTE_")) return;
+    try {
+        await fetch(API_URL,{
+            method:"POST",
+            mode:"no-cors",
+            headers:{"Content-Type":"text/plain;charset=utf-8"},
+            body:JSON.stringify(payload),
+            keepalive:true
+        });
+        setCloudStatus("Cloud saving: Active", "connected");
+    } catch(e) {
+        setCloudStatus("Cloud saving: Error", "error");
+    }
 }
-
-setCloudStatus("Cloud saving: Ready","connected");
+setCloudStatus("Cloud saving: Ready", "connected");
 
 function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+
 function makeQuestion(){
- let L=level,op,a,b,ans;
- if(L==="mixed")L=["easy","medium","hard"][rand(0,2)];
- if(L==="easy"){op=["+","-"][rand(0,1)];a=rand(1,30);b=rand(1,30);if(op==="-"&&b>a)[a,b]=[b,a]}
- else if(L==="medium"){op=["+","-","×","÷"][rand(0,3)];
-   if(op==="×"){a=rand(2,15);b=rand(2,12)} else if(op==="÷"){b=rand(2,12);ans=rand(2,20);a=b*ans}
-   else{a=rand(10,100);b=rand(10,100);if(op==="-"&&b>a)[a,b]=[b,a]}}
- else{op=["+","-","×","÷"][rand(0,3)];
-   if(op==="×"){a=rand(10,50);b=rand(5,25)} else if(op==="÷"){b=rand(3,25);ans=rand(5,50);a=b*ans}
-   else{a=rand(50,999);b=rand(20,999);if(op==="-"&&b>a)[a,b]=[b,a]}}
- if(ans===undefined)ans=op==="+"?a+b:op==="-"?a-b:a*b;
- let opts=new Set([ans]);while(opts.size<4){let d=rand(1,Math.max(3,Math.ceil(Math.abs(ans)*.25)+3)),x=ans+(Math.random()<.5?-d:d);if(x>=0)opts.add(x)}
- return {a,b,op,ans,opts:[...opts].sort(()=>Math.random()-.5)}
+    let L=level,op,a,b,ans;
+    if(L==="mixed") L=["easy","medium","hard"][rand(0,2)];
+    
+    // Adapted to ensure clean division for 3rd graders (No remainders generated in this block)
+    if(L==="easy"){
+        op=["+","-"][rand(0,1)];
+        a=rand(1,30); b=rand(1,30); 
+        if(op==="-" && b>a) [a,b]=[b,a]
+    }
+    else if(L==="medium"){
+        op=["+","-","×","÷"][rand(0,3)];
+        if(op==="×"){a=rand(2,12); b=rand(2,10)} 
+        else if(op==="÷"){
+            b=rand(2,9);
+            ans=rand(2,12);
+            const remainder = rand(0, b-1);
+            a=b*ans + remainder;
+        }
+        else{
+            a=rand(20,100); b=rand(10,100); 
+            if(op==="-" && b>a) [a,b]=[b,a]
+        }
+    }
+    else{
+        op=["+","-","×","÷"][rand(0,3)];
+        if(op==="×"){a=rand(10,30); b=rand(5,15)} 
+        else if(op==="÷"){
+            b=rand(3,12);
+            ans=rand(5,30);
+            const remainder = rand(0, b-1);
+            a=b*ans + remainder;
+        }
+        else{
+            a=rand(100,500); b=rand(20,500); 
+            if(op==="-" && b>a) [a,b]=[b,a]
+        }
+    }
+    
+    if(ans===undefined) ans = op==="+" ? a+b : op==="-" ? a-b : a*b;
+    
+    let opts=new Set([ans]);
+    while(opts.size<4){
+        let d = rand(1, Math.max(3, Math.ceil(ans*0.3)));
+        let x = ans + (Math.random()<.5 ? -d : d);
+        if(x>=0) opts.add(x)
+    }
+    return {a, b, op, ans, opts:[...opts].sort(()=>Math.random()-.5)}
 }
+
 function render(){
- current=makeQuestion();hinted=false;answered=false;
- question.textContent=`${current.a} ${current.op} ${current.b} = ?`;
- hint.textContent="💡 Tap an answer";message.textContent="";
- answers.innerHTML="";
- current.opts.forEach(x=>{let b=document.createElement("button");b.className="answer";b.textContent=x;b.onclick=()=>check(x,b);answers.appendChild(b)});
- update();
+    current = makeQuestion();
+    hinted = false; 
+    answered = false;
+    
+    explanationEl.style.display = "none";
+    explanationEl.innerHTML = "";
+    
+    questionEl.textContent = `${current.a} ${current.op} ${current.b} = ?`;
+    hintEl.textContent = "💡 Tap an answer"; 
+    messageEl.textContent = "";
+    
+    answersEl.innerHTML = "";
+    current.opts.forEach(x => {
+        let btn = document.createElement("button");
+        btn.className = "answer";
+        btn.textContent = x;
+        btn.onclick = () => check(x, btn);
+        answersEl.appendChild(btn);
+    });
+    updateStats();
 }
-function check(x,btn){
- if(answered)return;answered=true;
- const correct=x===current.ans;const earned=correct?(hinted?5:10):0;
- if(correct){score+=earned;streak++;btn.classList.add("correct");message.textContent=streak>=3?"🔥 Great streak!":"✅ Correct!"}
- else{streak=0;btn.classList.add("wrong");message.textContent=`❌ Answer: ${current.ans}`;document.querySelectorAll(".answer").forEach(b=>{if(Number(b.textContent)===current.ans)b.classList.add("correct")})}
- qCount=Math.min(TOTAL,qCount+1);
- if(score>best){best=score;localStorage.setItem("mathBest",best);document.getElementById("best").textContent=best}
- saveResult({correct,userAnswer:x,scoreEarned:earned});
- update();
+
+function check(userAnswer, btn){
+    if(answered) return;
+    answered = true;
+    
+    const correct = (userAnswer === current.ans);
+    const earned = correct ? (hinted ? 5 : 10) : 0;
+    
+    if(correct){
+        score += earned;
+        streak++;
+        btn.classList.add("correct");
+        messageEl.style.color = "#16a34a";
+        messageEl.textContent = streak >= 3 ? "🔥 Great streak! +"+earned : "✅ Correct! +"+earned;
+    }
+    else{
+        streak = 0;
+        btn.classList.add("wrong");
+        messageEl.style.color = "#dc2626";
+        messageEl.textContent = `❌ Oops! The correct answer is ${current.ans}`;
+        
+        // Highlight correct answer
+        document.querySelectorAll(".answer").forEach(b => {
+            if(Number(b.textContent) === current.ans) b.classList.add("correct");
+        });
+
+        // Trigger Notebook Explanation
+        showExplanation(current.a, current.op, current.b, current.ans);
+    }
+    
+    qCount = Math.min(TOTAL, qCount+1);
+    if(score > best){
+        best = score;
+        localStorage.setItem("mathBest", best);
+        document.getElementById("best").textContent = best;
+    }
+    
+    saveResult({correct, userAnswer, scoreEarned: earned});
+    updateStats();
 }
+
+// -------------------------------------------------------------
+// STEP-BY-STEP LOGIC GENERATOR FOR 3RD GRADE NOTEBOOK
+// -------------------------------------------------------------
+function showExplanation(a, op, b, ans) {
+    let html = "";
+    
+    if (op === "÷") {
+        html += `<div class="notebook-title">LONG DIVISION</div>`;
+
+        // Traditional Long Division Notation.
+        // Example:
+        //        18        R8
+        //       ______
+        // 11 ⟌ 206
+        //    − 11
+        //    ────
+        //      96
+        //    − 88
+        //    ────
+        //       8
+
+        const digits = String(a).split("").map(Number);
+        let index = 0;
+        let working = 0;
+        let quotientDigits = [];
+        let cycles = [];
+
+        // Find the first group of dividend digits that is at least the divisor.
+        while (index < digits.length) {
+            working = working * 10 + digits[index];
+            if (working >= b) break;
+            index++;
+        }
+
+        // Divisor larger than dividend.
+        if (working < b) {
+            quotientDigits = [0];
+            cycles.push({
+                number: working,
+                q: 0,
+                product: 0,
+                remainder: working,
+                bringDigit: null,
+                broughtValue: null,
+                endIndex: index
+            });
+        } else {
+            while (index < digits.length) {
+                const number = working;
+                const q = Math.floor(number / b);
+                const product = q * b;
+                const remainder = number - product;
+
+                quotientDigits.push(q);
+
+                let bringDigit = null;
+                let broughtValue = null;
+
+                if (index + 1 < digits.length) {
+                    bringDigit = digits[index + 1];
+                    broughtValue = remainder * 10 + bringDigit;
+                }
+
+                cycles.push({
+                    number,
+                    q,
+                    product,
+                    remainder,
+                    bringDigit,
+                    broughtValue,
+                    endIndex: index
+                });
+
+                index++;
+
+                if (index < digits.length) {
+                    working = remainder * 10 + digits[index];
+                }
+            }
+        }
+
+        const quotientText =
+            quotientDigits.join("").replace(/^0+(?=\d)/, "") || "0";
+        const finalRemainder =
+            cycles.length ? cycles[cycles.length - 1].remainder : a;
+
+        const dividendWidth = String(a).length;
+
+        // Each working row ends at the exact dividend column used in that step.
+        const row = (value, endIndex, isMinus = false) => {
+            const trailingDigits = Math.max(0, dividendWidth - 1 - endIndex);
+            const prefix = isMinus ? "− " : "";
+            return `<div class="ld-work-row" style="padding-right:${trailingDigits}ch;">
+                <span>${prefix}${value}</span>
+            </div>`;
+        };
+
+        const rule = (value, endIndex) => {
+            const trailingDigits = Math.max(0, dividendWidth - 1 - endIndex);
+            const ruleWidth = Math.max(3, String(value).length + 2);
+            return `<div class="ld-work-line" style="width:${ruleWidth}ch;margin-right:${trailingDigits}ch;"></div>`;
+        };
+
+        let workingHTML = "";
+
+        cycles.forEach((c, i) => {
+            // Subtract the product.
+            workingHTML += row(c.product, c.endIndex, true);
+            workingHTML += rule(c.product, c.endIndex);
+
+            // Bring down the next digit.
+            if (c.broughtValue !== null && c.broughtValue !== undefined) {
+                const nextEndIndex = Math.min(
+                    dividendWidth - 1,
+                    c.endIndex + 1
+                );
+                workingHTML += row(c.broughtValue, nextEndIndex, false);
+            }
+        });
+
+        // Final remainder.
+        const lastEndIndex =
+            cycles.length ? cycles[cycles.length - 1].endIndex : dividendWidth - 1;
+        workingHTML += row(finalRemainder, lastEndIndex, false);
+
+        html += `
+        <div class="traditional-division-card">
+            <div class="ld-top">
+                <div class="ld-quotient-new">
+                    <span>${quotientText}</span>
+                    ${finalRemainder ? `<span class="ld-r-new">R${finalRemainder}</span>` : ""}
+                </div>
+            </div>
+
+            <div class="ld-problem-new">
+                <span class="ld-divisor-new">${b}</span>
+                <span class="ld-bracket-new">${a}</span>
+            </div>
+
+            <div class="ld-working-new">
+                ${workingHTML}
+            </div>
+        </div>`;
+
+    }
+    else if (op === "+" || op === "-" || op === "×") {
+        html += `<div class="notebook-title">${op === '+' ? 'ADDITION' : op === '-' ? 'SUBTRACTION' : 'MULTIPLICATION'}</div>`;
+        
+        // Show Vertical Stack
+        html += `
+        <div class="math-stack">
+            <div>&nbsp;&nbsp;${a}</div>
+            <div class="bottom-number"><span>${op}</span> <span>${b}</span></div>
+            <div style="color: #dc2626;">&nbsp;&nbsp;${ans}</div>
+        </div>`;
+        
+        if(op === "+") {
+            html += `<div class="step-row">Always line up the numbers by their ones place. Start adding from the right side!</div>`;
+        } else if (op === "-") {
+            html += `<div class="step-row">Start subtracting from the right side. Don't forget to borrow if the top number is smaller!</div>`;
+        } else if (op === "×") {
+            html += `<div class="step-row">This means <b>${a} groups of ${b}</b>.</div>`;
+            html += `<div class="step-row">If we add ${b} together ${a} times, we get <span class="red">${ans}</span>!</div>`;
+        }
+    }
+
+    explanationEl.innerHTML = html;
+    explanationEl.style.display = "block";
+    
+    // Auto-scroll so the student sees the explanation
+    setTimeout(() => {
+        explanationEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+}
+
 function saveResult(r){
- if(!API_URL||API_URL.includes("PASTE_")){status.textContent="Cloud saving: add Apps Script URL";return}
- status.textContent="☁ Saving...";
- const payload={player:document.getElementById("player").value.trim()||"Guest",level,question:`${current.a} ${current.op} ${current.b}`,correctAnswer:current.ans,userAnswer:r.userAnswer,correct:r.correct,scoreEarned:r.scoreEarned,totalScore:score,streak,hintUsed:hinted};
- saveToCloud(payload)
- .then(()=>status.textContent="☁ Saved to Google Sheet")
- .catch(()=>{status.textContent="⚠ Save failed";setCloudStatus("Cloud saving: Error","error")});
+    if(!API_URL || API_URL.includes("PASTE_")) return;
+    const payload = {
+        player: document.getElementById("player").value.trim() || "Student",
+        level,
+        question: `${current.a} ${current.op} ${current.b}`,
+        correctAnswer: current.ans,
+        userAnswer: r.userAnswer,
+        correct: r.correct,
+        scoreEarned: r.scoreEarned,
+        totalScore: score,
+        streak,
+        hintUsed: hinted
+    };
+    saveToCloud(payload);
 }
+
 function giveHint(){
- if(answered)return;hinted=true;
- hint.textContent=current.op==="+"?`💡 Add ${current.a} and ${current.b}.`:current.op==="-"?`💡 Take ${current.b} away from ${current.a}.`:current.op==="×"?`💡 Think of ${current.a} groups of ${current.b}.`:`💡 How many groups of ${current.b} make ${current.a}?`;
+    if(answered) return;
+    hinted = true;
+    hintEl.textContent = 
+        current.op === "+" ? `💡 Add ${current.a} and ${current.b} together.` :
+        current.op === "-" ? `💡 Take ${current.b} away from ${current.a}.` :
+        current.op === "×" ? `💡 Think of ${current.a} groups of ${current.b}.` :
+                             `💡 How many groups of ${current.b} fit inside ${current.a}?`;
 }
-function nextQuestion(){render()}
-function setLevel(l,el){level=l;document.querySelectorAll(".choice").forEach(x=>x.classList.remove("active"));el.classList.add("active");render()}
-function update(){scoreEl.textContent=score;streakEl.textContent=streak;left.textContent=TOTAL-qCount;bar.style.width=(qCount/TOTAL*100)+"%"}
-const scoreEl=document.getElementById("score"),streakEl=document.getElementById("streak");
+
+function nextQuestion(){
+    render();
+}
+
+function setLevel(l, el){
+    level = l;
+    document.querySelectorAll(".choice").forEach(x => x.classList.remove("active"));
+    el.classList.add("active");
+    render();
+}
+
+function updateStats(){
+    scoreEl.textContent = score;
+    streakEl.textContent = streak;
+    leftEl.textContent = TOTAL - qCount;
+    barEl.style.width = (qCount / TOTAL * 100) + "%";
+}
+
+// Start Game
 render();
 </script>
 </body>
